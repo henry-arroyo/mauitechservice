@@ -1,0 +1,6 @@
+{
+  "name": "contact-handler",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Lambda handler for the Maui Tech Service contact form"
+}

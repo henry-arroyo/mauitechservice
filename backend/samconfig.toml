@@ -1,0 +1,14 @@
+version = 0.1
+
+[default.deploy.parameters]
+stack_name = "mauitechservice-contactform"
+resolve_s3 = true
+s3_prefix = "mauitechservice-contactform"
+region = "us-west-2"
+confirm_changeset = false
+capabilities = "CAPABILITY_IAM"
+parameter_overrides = "LambdaRoleArn=\"arn:aws:iam::196691452297:role/mauitechservice-contact-lambda\" ToEmail=\"info@mauitechservice.com\" FromEmail=\"info@mauitechservice.com\""
+image_repositories = []
+
+[default.global.parameters]
+region = "us-west-2"

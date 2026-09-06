@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Description: Maui Tech Service contact form backend (Lambda Function URL + SES)
+
+Parameters:
+  LambdaRoleArn:
+    Type: String
+    Default: arn:aws:iam::196691452297:role/mauitechservice-contact-lambda
+    Description: >
+      Pre-created Lambda execution role (see iam/create-role.sh). The deploy role
+      used by CI/Claude is not allowed to create IAM roles, only to pass
+      roles named mauitechservice-*.
+
+  TurnstileSecretParameter:
+    Type: String
+    Default: /mauitechservice/turnstile-secret
+    Description: SSM SecureString parameter holding the Cloudflare Turnstile secret key
+
+  ToEmail:
+    Type: String
+    Default: info@mauitechservice.com
+    Description: Destination address for contact form submissions
+
+  FromEmail:
+    Type: String
+    Default: info@mauitechservice.com
+    Description: SES-verified sender address
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    Architectures:
+      - arm64
+    Timeout: 10
+    Environment:
+      Variables:
+        TURNSTILE_SECRET_PARAM: !Ref TurnstileSecretParameter
+        TO_EMAIL: !Ref ToEmail
+        FROM_EMAIL: !Ref FromEmail
+
+Resources:
+  ContactFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: mauitechservice-contact
+      Handler: index.handler
+      CodeUri: contact-handler/
+      Description: Validates Turnstile token and sends contact email via SES
+      Role: !Ref LambdaRoleArn
+      FunctionUrlConfig:
+        AuthType: NONE
+        InvokeMode: BUFFERED
+
+Outputs:
+  FunctionUrl:
+    Description: >
+      Lambda Function URL. Added as a CloudFront origin with a /api/* behavior
+      using the CachingDisabled policy.
+    Value: !GetAtt ContactFunctionUrl.FunctionUrl
+  FunctionName:
+    Value: !Ref ContactFunction

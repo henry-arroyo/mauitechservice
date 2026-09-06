@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+@layer base {
+  ::selection {
+    background-color: rgba(27, 127, 166, 0.22);
+    color: #0f2a44;
+  }
+  body {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+@layer components {
+  .fade-in-hidden {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  .fade-in-visible {
+    animation: fadeInUp 0.7s ease-out forwards;
+  }
+  .stagger-1 { animation-delay: 0.08s; }
+  .stagger-2 { animation-delay: 0.16s; }
+  .stagger-3 { animation-delay: 0.24s; }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-coral px-6 py-3 text-sm font-semibold text-white shadow-md shadow-brand-coral/25 transition-all hover:bg-brand-coral-dark hover:shadow-lg hover:shadow-brand-coral/30 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-coral focus-visible:ring-offset-2;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-brand-line bg-white px-6 py-3 text-sm font-semibold text-brand-navy transition-all hover:border-brand-blue hover:text-brand-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue focus-visible:ring-offset-2;
+  }
+  .btn-ghost-light {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-white/25 px-6 py-3 text-sm font-semibold text-white transition-all hover:border-white/60 hover:bg-white/10 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/60;
+  }
+  .eyebrow {
+    @apply text-xs font-semibold uppercase tracking-[0.2em] text-brand-blue;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .fade-in-hidden {
+    opacity: 1;
+    transform: none;
+  }
+  .fade-in-visible,
+  .animate-pulse-dot {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
