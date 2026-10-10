@@ -1,0 +1,31 @@
+{
+  "_comment": "WAF web ACL required by the CloudFront Free flat-rate plan. Mirrors the CreatedByCloudFront-* ACLs the console creates for hookelesystems.com and henryarroyo.com. Applied by infra/ensure_free_plan.py.",
+  "Name": "mauitechservice-com",
+  "Description": "Web ACL for the mauitechservice.com CloudFront Free plan",
+  "DefaultAction": { "Allow": {} },
+  "Rules": [
+    {
+      "Name": "AWS-AWSManagedRulesAmazonIpReputationList",
+      "Priority": 0,
+      "Statement": { "ManagedRuleGroupStatement": { "VendorName": "AWS", "Name": "AWSManagedRulesAmazonIpReputationList" } },
+      "OverrideAction": { "None": {} },
+      "VisibilityConfig": { "SampledRequestsEnabled": true, "CloudWatchMetricsEnabled": true, "MetricName": "AWS-AWSManagedRulesAmazonIpReputationList" }
+    },
+    {
+      "Name": "AWS-AWSManagedRulesCommonRuleSet",
+      "Priority": 1,
+      "Statement": { "ManagedRuleGroupStatement": { "VendorName": "AWS", "Name": "AWSManagedRulesCommonRuleSet" } },
+      "OverrideAction": { "None": {} },
+      "VisibilityConfig": { "SampledRequestsEnabled": true, "CloudWatchMetricsEnabled": true, "MetricName": "AWS-AWSManagedRulesCommonRuleSet" }
+    },
+    {
+      "Name": "AWS-AWSManagedRulesKnownBadInputsRuleSet",
+      "Priority": 2,
+      "Statement": { "ManagedRuleGroupStatement": { "VendorName": "AWS", "Name": "AWSManagedRulesKnownBadInputsRuleSet" } },
+      "OverrideAction": { "None": {} },
+      "VisibilityConfig": { "SampledRequestsEnabled": true, "CloudWatchMetricsEnabled": true, "MetricName": "AWS-AWSManagedRulesKnownBadInputsRuleSet" }
+    }
+  ],
+  "VisibilityConfig": { "SampledRequestsEnabled": true, "CloudWatchMetricsEnabled": true, "MetricName": "mauitechservice-com" },
+  "OnSourceDDoSProtectionConfig": { "ALBLowReputationMode": "ACTIVE_UNDER_DDOS" }
+}

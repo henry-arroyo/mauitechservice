@@ -36,7 +36,7 @@ invalidates the CloudFront distribution.
 | Resource | Value |
 | --- | --- |
 | S3 bucket | `mauitechservice.com` (private, BucketOwnerEnforced) |
-| CloudFront distribution | see `DISTRIBUTION_ID` in `deploy.sh` |
+| CloudFront distribution | `E34OU7YIQD2P2B`, Free flat-rate plan (see below) |
 | ACM certificate (us-east-1) | `mauitechservice.com` + `www.mauitechservice.com`, DNS validated |
 | SES identity | `mauitechservice.com` domain, MAIL FROM `mail.mauitechservice.com` |
 | Turnstile secret | SSM SecureString `/mauitechservice/turnstile-secret` |
@@ -59,6 +59,34 @@ aws ssm put-parameter --name /mauitechservice/turnstile-secret --type SecureStri
 ```
 
 then update `VITE_TURNSTILE_SITE_KEY` in `.env` and redeploy the site.
+
+## CloudFront pricing plan (Free flat-rate)
+
+The distribution is on the CloudFront **Free** flat-rate plan, like
+hookelesystems.com and henryarroyo.com. A flat-rate plan is not a field in the
+distribution config. It is a subscription in the Pricing Plan Manager service
+that ties exactly one distribution to exactly one WAF web ACL
+(`infra/waf-web-acl.json`, the same rules the console uses). A plain
+`aws cloudfront create-distribution` call creates neither, which is why this
+distribution started out on pay-as-you-go.
+
+```bash
+pip install --upgrade boto3
+python infra/ensure_free_plan.py --check   # read-only status
+python infra/ensure_free_plan.py           # attach web ACL + subscribe, idempotent
+```
+
+Rules for future changes:
+
+- `deploy.sh` only syncs S3 and invalidates the cache, so it cannot change the
+  plan. It refuses to deploy if the web ACL is missing, and also checks the
+  subscription when a recent boto3 is installed.
+- Never remove `WebACLId` when editing the distribution config. Always start
+  from `get-distribution-config` and change only the fields you need.
+- If the distribution is ever recreated, run `infra/ensure_free_plan.py`
+  afterwards.
+- The deploy role needs `pricingplanmanager:ListSubscriptions`,
+  `GetSubscription` and `CreateSubscription`.
 
 ## DNS (Cloudflare, DNS-only / grey cloud)
 
