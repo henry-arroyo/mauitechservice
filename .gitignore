@@ -3,3 +3,5 @@ node_modules
 *.local
 .claude
 backend/.aws-sam/
+__pycache__/
+*.pyc
