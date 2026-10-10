@@ -6,13 +6,17 @@ const ssm = new SSMClient({});
 
 const { TURNSTILE_SECRET_PARAM, TO_EMAIL, FROM_EMAIL } = process.env;
 
+// Re-read the secret every 5 minutes so rotations in SSM take effect without a redeploy.
+const SECRET_TTL_MS = 5 * 60 * 1000;
 let cachedSecret = null;
+let cachedAt = 0;
 async function getTurnstileSecret() {
-  if (cachedSecret) return cachedSecret;
+  if (cachedSecret && Date.now() - cachedAt < SECRET_TTL_MS) return cachedSecret;
   const res = await ssm.send(
     new GetParameterCommand({ Name: TURNSTILE_SECRET_PARAM, WithDecryption: true })
   );
   cachedSecret = res.Parameter?.Value ?? "";
+  cachedAt = Date.now();
   return cachedSecret;
 }
 

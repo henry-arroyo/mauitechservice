@@ -40,7 +40,7 @@ invalidates the CloudFront distribution.
 | ACM certificate (us-east-1) | `mauitechservice.com` + `www.mauitechservice.com`, DNS validated |
 | SES identity | `mauitechservice.com` domain, MAIL FROM `mail.mauitechservice.com` |
 | Turnstile secret | SSM SecureString `/mauitechservice/turnstile-secret` |
-| Contact Lambda | CloudFormation stack `mauitechservice-contactform` (SAM) |
+| Contact Lambda | CloudFormation stack `mauitechservice-contactform` (SAM), role `mauitechservice-contact-lambda` |
 
 CloudFront routes `/api/*` to the Lambda Function URL with caching disabled;
 everything else is served from S3 with 403/404 mapped to `/index.html`.
@@ -52,10 +52,10 @@ cd backend
 AWS_PROFILE=mauitechservice sam build && sam deploy
 ```
 
-The Lambda reads the Turnstile secret from SSM at cold start. To rotate it:
+The Lambda reads the Turnstile secret from SSM and re-reads it every 5 minutes. To rotate it, replace REAL_SECRET with the secret from the Cloudflare dashboard:
 
 ```bash
-aws ssm put-parameter --name /mauitechservice/turnstile-secret --type SecureString --overwrite --value '<secret>'
+aws ssm put-parameter --name /mauitechservice/turnstile-secret --type SecureString --overwrite --value 'REAL_SECRET'
 ```
 
 then update `VITE_TURNSTILE_SITE_KEY` in `.env` and redeploy the site.
